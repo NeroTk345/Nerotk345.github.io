@@ -24,7 +24,11 @@
     <a href="#budget" data-v="budget"><i>💴</i><span>Budget</span></a>
     <a href="#gids" data-v="gids"><i>✅</i><span>Checklist</span></a>
   </nav>
-  <div class="cd" title="Tot vertrek van Schiphol"><span id="cdD">–</span><small>dagen tot vertrek</small></div>
+  <div class="tools">
+    <div class="cd" title="Tot vertrek van Schiphol"><span id="cdD">–</span><small>dagen</small></div>
+    <div id="sync" class="sync loc"><span>💾</span><em>Alleen dit apparaat</em></div>
+    <button id="bEdit" class="editb">✏️ <span>Bewerken</span></button>
+  </div>
 </header>
 
 <!-- VIEW: REIS (GLOBE) -->
@@ -36,7 +40,7 @@
     <h1>Onze reis door<br><em>Japan</em></h1>
     <p class="lead">Van de neonstraten van Tokyo via onsen, bergdorpen en tempels naar de streetfood van Osaka.</p>
     <div class="stats">
-      <div><b>21</b><span>dagen</span></div><div><b>9</b><span>overnachtings&shy;plekken</span></div><div><b>19</b><span>nachten</span></div><div><b id="cdD2">–</b><span>dagen te gaan</span></div>
+      <div><b id="stDays">21</b><span>dagen</span></div><div><b id="stStops">9</b><span>overnachtings&shy;plekken</span></div><div><b id="stNights">19</b><span>nachten</span></div><div><b id="cdD2">–</b><span>dagen te gaan</span></div>
     </div>
     <div class="cta">
       <a class="btn primary" href="#dag-1">Start bij dag 1 →</a>
@@ -65,6 +69,8 @@
 <!-- VIEW: GIDS -->
 <section class="view page" id="v-gids"><div class="wrap" id="gidsBody"></div></section>
 
+<div id="editbar">✏️ Bewerkmodus staat aan: klik op de knoppen <b>✏️</b> om dagen, plaatsen, hotels en het budget aan te passen. <button id="bReset" class="mini">↺ Herstel origineel</button></div>
+<div id="modal"></div>
 <div id="toast"></div>
 <script src="data.js"></script>
 <script src="app.js"></script>
