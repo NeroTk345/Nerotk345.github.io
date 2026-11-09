@@ -35,7 +35,8 @@ function defaults(){
     flight:{ airline:'Emirates via Dubai', out:'Di 4 mei 22:00 Schiphol → Wo 5 mei 22:20 Tokyo Haneda', back:'Ma 24 mei 21:30 Tokyo Narita → Di 25 mei 11:00 Schiphol', price:5268, booked:false, link:LETSFG_TRIP } },
     check:{ done:{}, custom:{} } };
 }
-let S = ls.get('jp27-state-v3', null) || defaults();
+const ONLINE = !!(window.claude && typeof window.claude.use==='function');
+let S = ONLINE ? (ls.get('jp27-state-v3', null) || defaults()) : defaults();
 const dayList = () => [...S.days].sort((a,b)=>a.order-b.order);
 const stopIds = () => (S.meta.order||[]).filter(k=>S.stops[k]);
 const dateOf = i => { const d = new Date(S.meta.start+'T12:00:00'); d.setDate(d.getDate()+i); return d; };
@@ -49,7 +50,7 @@ const hotelPrice = h => h ? (+h.pb && !h.hb ? +h.pb : +h.p||0) : 0;
 
 /* ============ STORAGE ADAPTER (db of lokaal) ============ */
 const Store = {
-  mode:'local', db:null, canWrite:true, ready:false,
+  mode:'local', db:null, canWrite:ONLINE, ready:false,
   async saveStop(k){ if(this.mode==='db') return this.w(this.db.doc('stops/'+k).set(clone(S.stops[k]))); this.local(); },
   async deleteStop(k){ if(this.mode==='db') return this.w(this.db.doc('stops/'+k).delete()); this.local(); },
   async saveDay(d){ if(this.mode==='db') return this.w(this.db.doc('days/'+d.id).set(clone(d))); this.local(); },
@@ -81,9 +82,9 @@ function updateBadge(){
   document.body.classList.toggle('dbmode', Store.mode==='db');
   const b=$('#sync'); if(!b) return;
   const m = Store.mode==='db' ? ({connecting:['⏳','Verbinden…','wait'],slow:['⚠️','Nog niet bereikt','warn'],error:['⚠️','Geen verbinding','warn'],live:[Store.canWrite?'☁️':'👁️',Store.canWrite?'Live gedeeld':'Alleen bekijken','ok']}[Store.status]||['⏳','Verbinden…','wait'])
-                                  : ['💾','Alleen dit apparaat','loc'];
+                                  : ['👁️','Alleen bekijken','loc'];
   b.className='sync '+m[2]; b.innerHTML=`<span>${m[0]}</span><em>${m[1]}</em>`;
-  b.title = Store.mode==='db' ? 'Wijzigingen worden direct gedeeld met iedereen die deze app via claude.ai opent' : 'Wijzigingen worden alleen in deze browser bewaard. Open de app via claude.ai om te synchroniseren.';
+  b.title = Store.mode==='db' ? 'Wijzigingen worden direct gedeeld met iedereen die deze app via claude.ai opent' : 'Deze versie is alleen om te bekijken';
   $('#bEdit').style.display = Store.canWrite ? '' : 'none';
 }
 
