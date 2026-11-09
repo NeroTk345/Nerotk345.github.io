@@ -244,7 +244,7 @@ let globe=null, spinning=true, tourTimer=null, globeSig='';
 const DXB=[55.36,25.25];
 function globeSeries(){
   const ids=stopIds(); const legs=[]; for(let i=0;i<ids.length-1;i++) legs.push({coords:[S.stops[ids[i]].coord, S.stops[ids[i+1]].coord]});
-  const pts = ids.filter(k=>k!=='tokyo2').map(k=>({name:S.stops[k].name, id:k, value:[...S.stops[k].coord,0]}));
+  const pts = ids.filter(k=>k!=='tokyo2').map(k=>({name:S.stops[k].name, id:k, value:[...S.stops[k].coord,0], label:{show:!!(S.stops[k].hotels||[]).length && k!=='miyajima'}}));
   const ams = S.stops.ams?.coord || [4.76,52.31];
   return [
     { type:'lines3D', coordinateSystem:'globe', blendMode:'lighter', lineStyle:{width:2,color:'#7d9bff',opacity:.4}, effect:{show:true,period:4,trailWidth:4,trailLength:.25,trailOpacity:1,trailColor:'#cdd9ff'},
