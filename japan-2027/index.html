@@ -9,7 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/echarts-gl@1.1.2/dist/echarts-gl.min.js"></script>
-<link rel="stylesheet" href="style.css?v=31">
+<link rel="stylesheet" href="style.css?v=40">
 </head>
 <body>
 <div id="sky"><canvas id="stars"></canvas></div>
@@ -23,6 +23,7 @@
     <a href="#plaatsen" data-v="plaatsen"><i>⛩️</i><span>Plaatsen</span></a>
     <a href="#budget" data-v="budget"><i>💴</i><span>Budget</span></a>
     <a href="#gids" data-v="gids"><i>✅</i><span>Checklist</span></a>
+    <a href="#planner" data-v="planner" class="navp"><i>✨</i><span>Planner</span></a>
   </nav>
   <div class="tools">
     <div class="cd" title="Tot vertrek van Schiphol"><span id="cdD">–</span><small>dagen</small></div>
@@ -36,9 +37,9 @@
   <div id="globe"></div>
   <div id="globeFallback" class="fallback">De 3D-wereldbol kon in deze browser niet laden. Alle andere onderdelen werken gewoon.</div>
   <div class="reis-hero">
-    <p class="eyebrow">4 – 25 mei 2027 · 4 reizigers</p>
-    <h1>Onze reis door<br><em>Japan</em></h1>
-    <p class="lead">Van de neonstraten van Tokyo via onsen, bergdorpen en tempels naar de streetfood van Osaka.</p>
+    <p class="eyebrow" id="heroEye">4 – 25 mei 2027 · 4 reizigers</p>
+    <h1>Onze reis door<br><em id="heroC">Japan</em></h1>
+    <p class="lead" id="heroLead">Van de neonstraten van Tokyo via onsen, bergdorpen en tempels naar de streetfood van Osaka.</p>
     <div class="stats">
       <div><b id="stDays">21</b><span>dagen</span></div><div><b id="stStops">9</b><span>overnachtings&shy;plekken</span></div><div><b id="stNights">19</b><span>nachten</span></div><div><b id="cdD2">–</b><span>dagen te gaan</span></div>
     </div>
@@ -68,11 +69,14 @@
 <section class="view page" id="v-budget"><div class="wrap" id="budgetBody"></div></section>
 <!-- VIEW: GIDS -->
 <section class="view page" id="v-gids"><div class="wrap" id="gidsBody"></div></section>
+<!-- VIEW: PLANNER -->
+<section class="view page" id="v-planner"><div class="wrap" id="plannerBody"></div></section>
 
 <div id="editbar">✏️ Bewerkmodus staat aan: klik op de knoppen <b>✏️</b> om dagen, plaatsen, hotels en het budget aan te passen. <button id="bReset" class="mini">↺ Herstel origineel</button></div>
 <div id="modal"></div>
 <div id="toast"></div>
-<script src="data.js?v=31"></script>
-<script src="app.js?v=31"></script>
+<script src="data.js?v=40"></script>
+<script src="planner.js?v=40"></script>
+<script src="app.js?v=40"></script>
 </body>
 </html>

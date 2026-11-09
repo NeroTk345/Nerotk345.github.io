@@ -245,20 +245,22 @@ const DXB=[55.36,25.25];
 function globeSeries(){
   const ids=stopIds(); const legs=[]; for(let i=0;i<ids.length-1;i++) legs.push({coords:[S.stops[ids[i]].coord, S.stops[ids[i+1]].coord]});
   const pts = ids.filter(k=>k!=='tokyo2').map(k=>({name:S.stops[k].name, id:k, value:[...S.stops[k].coord,0], label:{show:!!(S.stops[k].hotels||[]).length && k!=='miyajima'}}));
-  const ams = S.stops.ams?.coord || [4.76,52.31];
+  const ams = S.stops.ams?.coord || [4.76,52.31]; const f0 = S.stops[ids[0]]?.coord || ams, f1 = S.stops[ids[ids.length-1]]?.coord || ams;
+  const via = /dubai/i.test(S.meta.flight?.airline||'');
+  const fl = via ? [{coords:[ams,DXB]},{coords:[DXB,f0]},{coords:[f1,DXB]},{coords:[DXB,ams]}] : [{coords:[ams,f0]},{coords:[f1,ams]}];
   return [
     { type:'lines3D', coordinateSystem:'globe', blendMode:'lighter', lineStyle:{width:2,color:'#7d9bff',opacity:.4}, effect:{show:true,period:4,trailWidth:4,trailLength:.25,trailOpacity:1,trailColor:'#cdd9ff'},
-      data:[{coords:[ams,DXB]},{coords:[DXB,[139.78,35.55]]},{coords:[[140.39,35.77],DXB]},{coords:[DXB,ams]}] },
+      data:fl },
     { type:'lines3D', coordinateSystem:'globe', blendMode:'lighter', lineStyle:{width:3,color:'#f2b544',opacity:.6}, effect:{show:true,period:2.4,trailWidth:5,trailLength:.35,trailOpacity:1,trailColor:'#fff3cf'}, data:legs },
     { type:'scatter3D', coordinateSystem:'globe', symbolSize:9, blendMode:'lighter', itemStyle:{color:'#fff'}, label:{show:true,position:'right',distance:4,formatter:p=>p.name,textStyle:{color:'#fff',fontSize:13,fontWeight:'bold',backgroundColor:'rgba(11,16,32,.78)',padding:[3,7],borderRadius:4}}, data:pts },
-    { type:'scatter3D', coordinateSystem:'globe', symbolSize:8, itemStyle:{color:'#7d9bff'}, label:{show:true,position:'right',formatter:p=>p.name,textStyle:{color:'#dfe6ff',fontSize:12,backgroundColor:'rgba(11,16,32,.78)',padding:[3,7],borderRadius:4}}, data:[{name:'Amsterdam',value:[...ams,0]},{name:'Dubai',value:[...DXB,0]}] }];
+    { type:'scatter3D', coordinateSystem:'globe', symbolSize:8, itemStyle:{color:'#7d9bff'}, label:{show:true,position:'right',formatter:p=>p.name,textStyle:{color:'#dfe6ff',fontSize:12,backgroundColor:'rgba(11,16,32,.78)',padding:[3,7],borderRadius:4}}, data:[{name:(S.stops.ams?.name||'Thuis').split(' (')[0],value:[...ams,0]}, ...(via?[{name:'Dubai',value:[...DXB,0]}]:[])] }];
 }
 function initGlobe(){
   try{
     if(!window.echarts || !echarts.getMap('world')) throw 0;
     const tex=echarts.init(document.createElement('canvas'),null,{width:4096,height:2048});
     tex.setOption({ backgroundColor:'#0a1a38', geo:{ type:'map', map:'world', top:0,left:0,right:0,bottom:0, boundingCoords:[[-180,90],[180,-90]], silent:true, itemStyle:{areaColor:'#1b3358',borderColor:'#36598a',borderWidth:1.2},
-      regions:[{name:'Japan',itemStyle:{areaColor:'#e8402a',borderColor:'#ffd9cf',borderWidth:2.5}},{name:'Netherlands',itemStyle:{areaColor:'#f2b544',borderColor:'#fff1c9'}}] } });
+      regions:[{name:S.meta.mapCountry||'Japan',itemStyle:{areaColor:'#e8402a',borderColor:'#ffd9cf',borderWidth:2.5}},{name:'Netherlands',itemStyle:{areaColor:'#f2b544',borderColor:'#fff1c9'}}] } });
     globe=echarts.init($('#globe'));
     globe.setOption({ globe:{ baseTexture:tex, shading:'lambert', globeRadius:100, ...(innerWidth>1000?{left:'28%',width:'72%',top:0,height:'100%'}:{left:0,width:'100%',top:'-12%',height:'100%'}),
         light:{ambient:{intensity:.6},main:{intensity:1.2,alpha:28,beta:-30}},
@@ -267,23 +269,26 @@ function initGlobe(){
     globeSig=JSON.stringify(stopIds().map(k=>S.stops[k].coord));
     globe.on('click', p=>{ if(p.data&&p.data.id) location.hash='plaats-'+p.data.id; });
     addEventListener('resize', ()=>globe&&globe.resize());
-    setTimeout(()=>{ if(curView==='reis'&&!tourTimer) flyTo([136.5,35.8],75); }, 3800);
+    setTimeout(()=>{ if(curView==='reis'&&!tourTimer) flyTo(tripCenter(),75); }, 3800);
   }catch(e){ $('#globeFallback').style.display='block'; }
 }
 function refreshGlobe(){ if(!globe) return; const sig=JSON.stringify(stopIds().map(k=>S.stops[k].coord)); if(sig!==globeSig){ globeSig=sig; globe.setOption({series:globeSeries()}, {replaceMerge:['series']}); } }
 function flyTo(coord,dist){ if(!globe) return; spinning=false; $('#gSpin').classList.remove('on'); globe.setOption({globe:{viewControl:{targetCoord:coord,distance:dist,autoRotate:false}}}); }
 $('#gWorld').onclick=()=>{ stopTour(); globe&&globe.setOption({globe:{viewControl:{targetCoord:[60,35],distance:220}}}); };
-$('#gJapan').onclick=()=>{ stopTour(); flyTo([136.5,35.8],55); };
+$('#gJapan').onclick=()=>{ stopTour(); flyTo(tripCenter(),55); };
+function tripCenter(){ const c=stopIds().map(k=>S.stops[k].coord).filter(Boolean); if(!c.length) return [136.5,35.8]; return [c.reduce((a,x)=>a+x[0],0)/c.length, c.reduce((a,x)=>a+x[1],0)/c.length]; }
 $('#gSpin').onclick=()=>{ spinning=!spinning; $('#gSpin').classList.toggle('on',spinning); globe&&globe.setOption({globe:{viewControl:{autoRotate:spinning}}}); };
 function renderStrip(){ $('#strip').innerHTML = stopIds().map((k,i)=>{ const s=S.stops[k]; return `<a class="chipstop" href="#plaats-${k}" data-k="${k}" style="${cvars(s)}"><span class="dot">${i+1}</span><span><b>${esc(s.name)}</b><small>${esc(stopRange(k).label)}</small></span></a>`; }).join('');
-  const L=dayList(); $('#stDays').textContent=L.length; $('#stNights').textContent=L.filter(d=>d.sleep).length; $('#stStops').textContent=new Set(L.map(d=>d.sleep).filter(Boolean)).size; tick(); }
+  const L=dayList(); const c=S.meta.country||'Japan', tr=(S.meta.travellers||[]).length||4; const e=new Date(dateOf(L.length-1));
+  $('#heroC').textContent=c; $('.logo b').textContent=`${c} ${dateOf(0).getFullYear()}`; $('#heroEye').textContent=`${dateOf(0).getDate()} ${MONTH[dateOf(0).getMonth()]} – ${e.getDate()} ${MONTH[e.getMonth()]} ${e.getFullYear()} · ${tr} reizigers`; if(S.meta.summary) $('#heroLead').textContent=S.meta.summary;
+  $('#stDays').textContent=L.length; $('#stNights').textContent=L.filter(d=>d.sleep).length; $('#stStops').textContent=new Set(L.map(d=>d.sleep).filter(Boolean)).size; tick(); }
 function showTourCard(k){ const s=S.stops[k]||{name:'Amsterdam',kanji:'旅',c1:'#4f6bff',c2:'#9b7bff',intro:'Vertrek vanaf Schiphol.'};
   $('#tourCard').innerHTML=`<div class="tc-hero" style="background:linear-gradient(135deg,${s.c1},${s.c2})"><div class="k">${esc(s.kanji)}</div><small style="font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:11px">${esc(k==='ams'?'4 mei':stopRange(k).label)}</small><h3>${esc(s.name)}</h3></div><div class="tc-b">${esc(s.intro)}${k!=='ams'?`<br><a href="#plaats-${k}">Bekijk ${esc(s.name)} →</a>`:''}</div>`;
   $('#tourCard').classList.add('on'); $$('.chipstop').forEach(c=>c.classList.toggle('on',c.dataset.k===k)); const a=document.querySelector(`.chipstop[data-k="${k}"]`); a&&a.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }
 function stopTour(){ if(tourTimer){ clearInterval(tourTimer); tourTimer=null; } $('#bTour').classList.remove('on'); $('#bTour').textContent='▶ Speel de reis af'; }
 $('#bTour').onclick=()=>{ if(tourTimer){ stopTour(); return; } $('#bTour').classList.add('on'); $('#bTour').textContent='⏸ Pauze';
   const seq=['ams',...stopIds()]; let i=0;
-  const step=()=>{ const k=seq[i]; const c=(S.stops[k]||{coord:[4.76,52.31]}).coord; flyTo(c,k==='ams'?140:22); showTourCard(k); i++; if(i>=seq.length){ stopTour(); setTimeout(()=>{ flyTo([136.5,35.8],55); $('#tourCard').classList.remove('on'); },6000); } };
+  const step=()=>{ const k=seq[i]; const c=(S.stops[k]||{coord:[4.76,52.31]}).coord; flyTo(c,k==='ams'?140:22); showTourCard(k); i++; if(i>=seq.length){ stopTour(); setTimeout(()=>{ flyTo(tripCenter(),55); $('#tourCard').classList.remove('on'); },6000); } };
   step(); tourTimer=setInterval(step,6000); };
 
 /* ============ MINI MAP ============ */
@@ -292,7 +297,7 @@ function miniMap(el, focus){
   if(!el) return; if(!window.echarts||!echarts.getMap('world')){ el.innerHTML='<p style="color:#9aa3ba;padding:20px">Kaart niet beschikbaar</p>'; return; }
   const ch=echarts.init(el); maps.push(ch); const ids=stopIds(); const legs=[]; for(let i=0;i<ids.length-1;i++) legs.push({coords:[S.stops[ids[i]].coord,S.stops[ids[i+1]].coord]});
   const f=S.stops[focus]||S.stops[ids[0]];
-  ch.setOption({ backgroundColor:'#0f1a33', geo:{ map:'world', roam:true, center:f?f.coord:[136,36], zoom:14, silent:true, scaleLimit:{min:4,max:60}, itemStyle:{areaColor:'#24365e',borderColor:'#3d5a8f'}, regions:[{name:'Japan',itemStyle:{areaColor:'#2f4677',borderColor:'#6e8fd0'}}] },
+  ch.setOption({ backgroundColor:'#0f1a33', geo:{ map:'world', roam:true, center:f?f.coord:[136,36], zoom:14, silent:true, scaleLimit:{min:4,max:60}, itemStyle:{areaColor:'#24365e',borderColor:'#3d5a8f'}, regions:[{name:S.meta.mapCountry||'Japan',itemStyle:{areaColor:'#2f4677',borderColor:'#6e8fd0'}}] },
     series:[ { type:'lines', coordinateSystem:'geo', zlevel:1, lineStyle:{color:'#f2b544',width:2,opacity:.55,curveness:.15}, data:legs },
       { type:'lines', coordinateSystem:'geo', zlevel:2, effect:{show:true,period:4,trailLength:.3,color:'#fff3cf',symbolSize:4}, lineStyle:{width:0,curveness:.15}, data:legs },
       { type:'scatter', coordinateSystem:'geo', zlevel:3, symbolSize:7, itemStyle:{color:'#fff'}, label:{show:true,position:'right',formatter:'{b}',color:'#dfe6ff',fontSize:11}, data:ids.filter(k=>k!=='tokyo2'&&k!==focus).map(k=>({name:S.stops[k].name,value:S.stops[k].coord})) },
@@ -445,14 +450,14 @@ let curView='';
 function renderRoute(keepScroll){
   const h=(location.hash||'#reis').slice(1); let v=h, arg=null;
   if(/^dag-\d+$/.test(h)){ v='dag'; arg=+h.slice(4); } else if(/^plaats-[A-Za-z0-9]+$/.test(h)){ v='plaats'; arg=h.slice(7); }
-  if(!['reis','dagen','dag','plaatsen','plaats','budget','gids'].includes(v)) v='reis';
+  if(!['reis','dagen','dag','plaatsen','plaats','budget','gids','planner'].includes(v)) v='reis';
   const sameView = keepScroll && v===curView; const sc = sameView ? $('#v-'+v).scrollTop : 0;
   clearMaps(); $$('.view').forEach(e=>e.classList.remove('on')); $('#v-'+v).classList.add('on');
   const navKey=v==='dag'?'dagen':v==='plaats'?'plaatsen':v; $$('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===navKey));
   const changed = curView!==v; curView=v; renderStrip();
   if(v==='reis'){ if(!globe) initGlobe(); else { globe.resize(); refreshGlobe(); if(changed) globe.setOption({globe:{viewControl:{autoRotate:spinning}}}); } }
   else { if(globe&&changed) globe.setOption({globe:{viewControl:{autoRotate:false}}}); stopTour(); }
-  if(v==='dagen') renderDagen(); if(v==='dag') renderDag(arg); if(v==='plaatsen') renderPlaatsen(); if(v==='plaats') renderPlaats(arg); if(v==='budget') renderBudget(); if(v==='gids') renderGids();
+  if(v==='dagen') renderDagen(); if(v==='dag') renderDag(arg); if(v==='plaatsen') renderPlaatsen(); if(v==='plaats') renderPlaats(arg); if(v==='budget') renderBudget(); if(v==='gids') renderGids(); if(v==='planner'){ if(!sameView || !document.querySelector('#plannerBody .wcard, #plannerBody .gen') ) renderPlanner(); }
   if(v!=='reis') $('#v-'+v).scrollTop = sc;
 }
 addEventListener('hashchange',()=>renderRoute(false));
@@ -464,4 +469,5 @@ addEventListener('keydown',e=>{ if(modalOpen){ if(e.key==='Escape') $('#modal [d
     if(Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*1.8){ const n=+location.hash.slice(5), L=dayList().length; if(dx<0&&n<L) location.hash='dag-'+(n+1); if(dx>0&&n>1) location.hash='dag-'+(n-1); } },{passive:true}); })();
 $('#bEdit').onclick=()=>setEditing(!editing);
 $('#bReset').onclick=()=>{ if(Store.mode==='db') return; if(!$('#bReset').dataset.sure){ $('#bReset').dataset.sure=1; $('#bReset').textContent='Zeker? Klik nogmaals'; return; } S=defaults(); ls.set('jp27-state-v3',S); $('#bReset').dataset.sure=''; $('#bReset').textContent='↺ Herstel origineel'; renderRoute(true); toast('Origineel plan hersteld'); };
+if(!ONLINE) document.querySelector('#nav a[data-v="planner"]').style.display='none';
 updateBadge(); renderRoute(false); connectDb();
