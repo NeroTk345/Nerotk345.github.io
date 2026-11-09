@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Japan 2027 – Onze rondreis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts-gl@1.1.2/dist/echarts-gl.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="sky"><canvas id="stars"></canvas></div>
+
+<!-- TOP BAR -->
+<header class="bar">
+  <a class="logo" href="#reis"><span class="hanko">旅</span><span><b>Japan 2027</b><small>Familie-rondreis</small></span></a>
+  <nav id="nav">
+    <a href="#reis" data-v="reis"><i>🌏</i><span>Reis</span></a>
+    <a href="#dagen" data-v="dagen"><i>📅</i><span>Dagen</span></a>
+    <a href="#plaatsen" data-v="plaatsen"><i>⛩️</i><span>Plaatsen</span></a>
+    <a href="#budget" data-v="budget"><i>💴</i><span>Budget</span></a>
+    <a href="#gids" data-v="gids"><i>✅</i><span>Checklist</span></a>
+  </nav>
+  <div class="cd" title="Tot vertrek van Schiphol"><span id="cdD">–</span><small>dagen tot vertrek</small></div>
+</header>
+
+<!-- VIEW: REIS (GLOBE) -->
+<section class="view" id="v-reis">
+  <div id="globe"></div>
+  <div id="globeFallback" class="fallback">De 3D-wereldbol kon in deze browser niet laden. Alle andere onderdelen werken gewoon.</div>
+  <div class="reis-hero">
+    <p class="eyebrow">4 – 25 mei 2027 · 4 reizigers</p>
+    <h1>Onze reis door<br><em>Japan</em></h1>
+    <p class="lead">Van de neonstraten van Tokyo via onsen, bergdorpen en tempels naar de streetfood van Osaka.</p>
+    <div class="stats">
+      <div><b>21</b><span>dagen</span></div><div><b>9</b><span>overnachtings&shy;plekken</span></div><div><b>19</b><span>nachten</span></div><div><b id="cdD2">–</b><span>dagen te gaan</span></div>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#dag-1">Start bij dag 1 →</a>
+      <button class="btn ghost" id="bTour">▶ Speel de reis af</button>
+    </div>
+  </div>
+  <div class="globe-tools">
+    <button id="gWorld" title="Hele wereld">🌍</button>
+    <button id="gJapan" title="Zoom op Japan">🗾</button>
+    <button id="gSpin" class="on" title="Draaien aan/uit">↻</button>
+  </div>
+  <div class="strip" id="strip"></div>
+  <div id="tourCard" class="tour-card"></div>
+</section>
+
+<!-- VIEW: DAGEN -->
+<section class="view page" id="v-dagen"><div class="wrap" id="dagenBody"></div></section>
+<!-- VIEW: DAG -->
+<section class="view page" id="v-dag"><div id="dagBody"></div></section>
+<!-- VIEW: PLAATSEN -->
+<section class="view page" id="v-plaatsen"><div class="wrap" id="plaatsenBody"></div></section>
+<!-- VIEW: PLAATS -->
+<section class="view page" id="v-plaats"><div id="plaatsBody"></div></section>
+<!-- VIEW: BUDGET -->
+<section class="view page" id="v-budget"><div class="wrap" id="budgetBody"></div></section>
+<!-- VIEW: GIDS -->
+<section class="view page" id="v-gids"><div class="wrap" id="gidsBody"></div></section>
+
+<div id="toast"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
