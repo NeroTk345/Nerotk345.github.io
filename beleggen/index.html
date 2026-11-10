@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beleggen · Startpagina</title>
+<meta name="description" content="Startpagina met mijn beleggingstools: Northstar portfolio tracker en Insider Tracker.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23151b23'/><path d='M6 22l6-6 5 4 9-10' stroke='%232fbf71' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<style>
+  :root {
+    --bg: #0d1117; --panel: #151b23; --panel2: #1c2430; --line: #2a3441;
+    --text: #e6edf3; --muted: #8b98a8; --accent: #4f8cff; --green: #2fbf71; --red: #f0565b;
+    --amber: #e7a93a; --violet: #a37cf0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+         background-image: radial-gradient(1200px 500px at 15% -10%, rgba(79,140,255,.12), transparent 60%),
+                           radial-gradient(900px 500px at 100% 0%, rgba(47,191,113,.08), transparent 60%); }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 56px 24px 40px; }
+  header { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 36px; }
+  h1 { font-size: 34px; margin: 0; letter-spacing: -.5px; }
+  .sub { color: var(--muted); margin-top: 6px; }
+  .clock { color: var(--muted); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+  .clock b { color: var(--text); font-size: 20px; display: block; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 20px; }
+  .tile { position: relative; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line);
+          border-radius: 16px; overflow: hidden; transition: transform .18s, border-color .18s, box-shadow .18s; }
+  .tile:hover { transform: translateY(-3px); border-color: var(--hl, var(--accent)); box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+  .art { height: 170px; display: block; width: 100%; background: var(--panel2); border-bottom: 1px solid var(--line); }
+  .body { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .title { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; }
+  .title .go { margin-left: auto; color: var(--muted); font-size: 18px; transition: transform .18s, color .18s; }
+  .tile:hover .go { transform: translateX(3px); color: var(--hl, var(--accent)); }
+  .desc { color: var(--muted); }
+  .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: auto; padding-top: 6px; }
+  .pill { font-size: 12px; padding: 3px 10px; border-radius: 99px; background: var(--panel2); border: 1px solid var(--line); color: var(--muted); }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .status.on i { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .status.off i { background: var(--red); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 4px; }
+  .stat { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+  .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+  .stat .v { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .feed { margin-top: 4px; display: grid; gap: 6px; }
+  .feed div { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .feed b { color: var(--text); font-weight: 600; }
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin: 40px 0 12px; font-weight: 600; }
+  .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .link { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--panel); border: 1px solid var(--line);
+          border-radius: 12px; transition: border-color .15s; }
+  .link:hover { border-color: var(--accent); }
+  .link svg { flex: none; }
+  .link small { display: block; color: var(--muted); font-size: 12px; }
+  footer { color: var(--muted); font-size: 12px; margin-top: 48px; text-align: center; }
+  @media (max-width: 520px) { .clock { text-align: left; } h1 { font-size: 26px; } .wrap { padding-top: 32px; } .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Beleggen</h1>
+      <div class="sub">Mijn tools voor aandelen, op één plek.</div>
+    </div>
+    <div class="clock"><b id="time">--:--</b><span id="market">Beurs …</span></div>
+  </header>
+
+  <div class="tiles">
+    <!-- Northstar -->
+    <a class="tile" href="https://aandelen.stackvault.nl" style="--hl: var(--accent)">
+      <svg class="art" viewBox="0 0 400 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="ns-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8cff" stop-opacity=".45"/><stop offset="1" stop-color="#4f8cff" stop-opacity="0"/></linearGradient>
+          <radialGradient id="ns-glow" cx=".82" cy=".25" r=".5"><stop offset="0" stop-color="#4f8cff" stop-opacity=".35"/><stop offset="1" stop-color="#4f8cff" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="400" height="170" fill="#1c2430"/>
+        <rect width="400" height="170" fill="url(#ns-glow)"/>
+        <g stroke="#2a3441" stroke-width="1">
+          <line x1="0" y1="45" x2="400" y2="45"/><line x1="0" y1="85" x2="400" y2="85"/><line x1="0" y1="125" x2="400" y2="125"/>
+        </g>
+        <path d="M0 140 L40 128 L80 132 L120 110 L160 116 L200 92 L240 98 L280 70 L320 78 L360 50 L400 40 L400 170 L0 170Z" fill="url(#ns-fill)"/>
+        <path d="M0 140 L40 128 L80 132 L120 110 L160 116 L200 92 L240 98 L280 70 L320 78 L360 50 L400 40" fill="none" stroke="#4f8cff" stroke-width="3" stroke-linejoin="round"/>
+        <g transform="translate(330 46)">
+          <path d="M0 -22 L5 -5 L22 0 L5 5 L0 22 L-5 5 L-22 0 L-5 -5Z" fill="#e6edf3"/>
+          <circle r="3" fill="#4f8cff"/>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="11" fill="#8b98a8">
+          <rect x="20" y="18" width="92" height="40" rx="8" fill="#151b23" stroke="#2a3441"/>
+          <text x="30" y="34">Portefeuille</text>
+          <text x="30" y="50" fill="#2fbf71" font-weight="700" font-size="13">▲ live</text>
+        </g>
+      </svg>
+      <div class="body">
+        <div class="title">Northstar <span class="go">→</span></div>
+        <div class="desc">Portfolio tracker en aandelenbrowser. Trade Republic- en DEGIRO-import, sectoren en kwartaalcijfers.</div>
+        <div class="meta"><span class="pill">aandelen.stackvault.nl</span><span class="pill">Self-hosted</span>
+          <span class="status" id="ns-status"><i></i>controleren…</span></div>
+      </div>
+    </a>
+
+    <!-- Insider Tracker -->
+    <a class="tile" href="../insider-tracker/" style="--hl: var(--green)">
+      <svg class="art" viewBox="0 0 400 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <radialGradient id="it-glow" cx=".2" cy=".2" r=".6"><stop offset="0" stop-color="#2fbf71" stop-opacity=".28"/><stop offset="1" stop-color="#2fbf71" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect width="400" height="170" fill="#1c2430"/>
+        <rect width="400" height="170" fill="url(#it-glow)"/>
+        <g>
+          <rect x="30"  y="100" width="22" height="50" rx="4" fill="#2fbf71" opacity=".5"/>
+          <rect x="62"  y="80"  width="22" height="70" rx="4" fill="#2fbf71" opacity=".65"/>
+          <rect x="94"  y="112" width="22" height="38" rx="4" fill="#f0565b" opacity=".55"/>
+          <rect x="126" y="60"  width="22" height="90" rx="4" fill="#2fbf71" opacity=".8"/>
+          <rect x="158" y="40"  width="22" height="110" rx="4" fill="#2fbf71"/>
+          <rect x="190" y="118" width="22" height="32" rx="4" fill="#f0565b" opacity=".55"/>
+        </g>
+        <g font-family="Inter, sans-serif" font-size="11">
+          <rect x="236" y="26" width="140" height="34" rx="8" fill="#151b23" stroke="#2a3441"/>
+          <circle cx="252" cy="43" r="4" fill="#2fbf71"/>
+          <text x="262" y="47" fill="#e6edf3" font-weight="600">CEO koopt $2,1 mln</text>
+          <rect x="236" y="68" width="140" height="34" rx="8" fill="#151b23" stroke="#2a3441"/>
+          <circle cx="252" cy="85" r="4" fill="#a37cf0"/>
+          <text x="262" y="89" fill="#e6edf3" font-weight="600">3 insiders kopen</text>
+          <rect x="236" y="110" width="140" height="34" rx="8" fill="#151b23" stroke="#2a3441"/>
+          <circle cx="252" cy="127" r="4" fill="#4f8cff"/>
+          <text x="262" y="131" fill="#e6edf3" font-weight="600">Buffett: nieuwe 13F</text>
+        </g>
+      </svg>
+      <div class="body">
+        <div class="title">Insider Tracker <span class="go">→</span></div>
+        <div class="desc">Wat CEO's, directeuren en superbeleggers zoals Buffett en Burry kopen en verkopen, rechtstreeks uit SEC-filings.</div>
+        <div class="stats" id="it-stats">
+          <div class="stat"><div class="l">Aankopen 30d</div><div class="v">–</div></div>
+          <div class="stat"><div class="l">Fondsen</div><div class="v">–</div></div>
+          <div class="stat"><div class="l">Alerts</div><div class="v">–</div></div>
+        </div>
+        <div class="feed" id="it-feed"></div>
+        <div class="meta"><span class="pill">GitHub Pages</span><span class="pill">Elk uur bijgewerkt</span>
+          <span class="status" id="it-status"><i></i>laden…</span></div>
+      </div>
+    </a>
+  </div>
+
+  <h2>Code & extra</h2>
+  <div class="links">
+    <a class="link" href="https://github.com/NeroTk345/stock-tracker">
+      <svg width="28" height="28" viewBox="0 0 16 16" fill="#e6edf3" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <div><b>stock-tracker</b><small>Code van Northstar</small></div>
+    </a>
+    <a class="link" href="https://github.com/NeroTk345/insider-tracker">
+      <svg width="28" height="28" viewBox="0 0 16 16" fill="#e6edf3" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <div><b>insider-tracker</b><small>Code + elk-uur Action</small></div>
+    </a>
+    <a class="link" href="https://www.sec.gov/edgar/search/">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8b98a8" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4" stroke-linecap="round"/></svg>
+      <div><b>SEC EDGAR</b><small>Zelf filings zoeken</small></div>
+    </a>
+  </div>
+
+  <footer>Geen beleggingsadvies · nerotk345.github.io/beleggen</footer>
+</div>
+
+<script>
+// ---- klok + beursstatus (NYSE 15:30–22:00 NL-tijd, Euronext 09:00–17:30, ma–vr; feestdagen niet meegenomen)
+function tick() {
+  const now = new Date();
+  const nl = new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', minute: '2-digit', weekday: 'long' });
+  const parts = Object.fromEntries(nl.formatToParts(now).map(p => [p.type, p.value]));
+  document.getElementById('time').textContent = `${parts.hour}:${parts.minute}`;
+  const ny = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const ams = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Amsterdam' }));
+  const open = (d, h1, m1, h2, m2) => d.getDay() > 0 && d.getDay() < 6 && (d.getHours() * 60 + d.getMinutes()) >= h1 * 60 + m1 && (d.getHours() * 60 + d.getMinutes()) < h2 * 60 + m2;
+  const us = open(ny, 9, 30, 16, 0), eu = open(ams, 9, 0, 17, 30);
+  document.getElementById('market').textContent = `${parts.weekday} · Wall Street ${us ? 'open' : 'dicht'} · Euronext ${eu ? 'open' : 'dicht'}`;
+}
+tick(); setInterval(tick, 15000);
+
+const setStatus = (id, on, text) => { const el = document.getElementById(id); el.className = 'status ' + (on ? 'on' : 'off'); el.lastChild.textContent = text; };
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---- Northstar: bereikbaar? (no-cors: we krijgen geen inhoud, maar wel of de server antwoordt)
+(async () => {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 6000);
+  try { await fetch('https://aandelen.stackvault.nl/', { mode: 'no-cors', cache: 'no-store', signal: ctl.signal }); setStatus('ns-status', true, 'online'); }
+  catch { setStatus('ns-status', false, 'niet bereikbaar'); }
+  finally { clearTimeout(t); }
+})();
+
+// ---- Insider Tracker: live cijfers uit de geëxporteerde data
+(async () => {
+  try {
+    const [s, alerts] = await Promise.all([
+      fetch('../insider-tracker/data/stats.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : Promise.reject()),
+      fetch('../insider-tracker/data/alerts.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : []).catch(() => []),
+    ]);
+    const nf = new Intl.NumberFormat('nl-NL');
+    const v = document.querySelectorAll('#it-stats .v');
+    v[0].textContent = nf.format(s.buys_30d); v[1].textContent = nf.format(s.funds); v[2].textContent = nf.format(s.alerts);
+    const colors = { buy: '#2fbf71', sell: '#f0565b', cluster: '#a37cf0', fund: '#4f8cff' };
+    document.getElementById('it-feed').innerHTML = alerts.slice(0, 3).map(a =>
+      `<div><span class="dot" style="background:${colors[a.kind] || '#8b98a8'}"></span><b>${esc(a.title)}</b></div>`).join('');
+    const last = s.sync && s.sync.last_run;
+    const age = last ? (Date.now() - new Date(last).getTime()) / 36e5 : Infinity;
+    setStatus('it-status', age < 3, last ? 'bijgewerkt ' + new Date(last).toLocaleString('nl-NL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'nog geen data');
+  } catch {
+    setStatus('it-status', false, 'nog niet online');
+  }
+})();
+</script>
+</body>
+</html>
